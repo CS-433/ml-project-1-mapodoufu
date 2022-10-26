@@ -1,0 +1,123 @@
+\documentclass[10pt,conference,compsocconf]{IEEEtran}
+
+\usepackage{hyperref}
+\usepackage{graphicx}	% For figure environment
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\begin{document}
+\title{Machine Learning Project1}
+
+\author{
+  Zehao Chen, Haolong Li, Xuehan Tang\\
+  \textit{EPFL, Switzerland}
+}
+
+\maketitle
+
+\begin{abstract}
+  A critical part of scientific discovery is the
+  communication of research findings to peers or the general public.
+  Mastery of the process of scientific communication improves the
+  visibility and impact of research. While this guide is a necessary
+  tool for learning how to write in a manner suitable for publication
+  at a scientific venue, it is by no means sufficient, on its own, to
+  make its reader an accomplished writer. 
+  This guide should be a starting point for further development of 
+  writing skills.
+\end{abstract}
+
+\section{Introduction}
+
+The aim of this project is to apply machine learning techniques to actual CERN particle accelerator data to recreate the process of
+“discovering” the Higgs particle. There is a training dataset with
+different experiments and its characteristics. And we will do several operations to original dataset. We have to deal with missing values, remove related features, apply different methods and estimate how well is our method. The final goal to find out a best method that has lowest loss and highest accruacy.
+
+\section{EXPLORATORY DATA ANALYSIS}
+\label{sec:structure-paper}
+
+After importing the training set, we find that there are 250.000 events and 30 features. For the prediction values, there are only 'b' for background and 's' for signal. The proportion of Y $\in \{b,c\}$ 
+is 65.73\% and 34.27\% respectively.
+
+To deal with missing values, we use the median of the rest of the values for the feature.
+
+After observing features, the number of jets of the event can determine the missing values.
+
+• If it had 0 or 1 jets, there will be some missing values in some features.
+
+• If it had either 2 or 3 jets, there are no missing values.
+
+For this situation, we use 3 methods to deal with different categories. 
+
+\section{Data Preprocessing}
+\subsection{Grouping Data}
+The feature data is divided into 4 categories, with \texttt{PRI\char`_jet\char`_num = 0, 1, 2, 3.}, upon inspection, we notice that:
+\begin{enumerate}
+    \item \texttt{PRI\char`_jet\char`_num = 0:} A specific set S of the features presents missing values.
+    \item \texttt{PRI\char`_jet\char`_num = 1:} A specific subset of the features presents missing values.
+    \item \texttt{PRI\char`_jet\char`_num = 2, 3:} There are no missing values.
+\end{enumerate}
+\newline
+\quad We hence group the data into 3 groups, with \texttt{PRI\char`_jet\char`_num = 0; 1; 2, 3}
+for better prediction performance.
+
+
+\subsection{Feature Processing}
+\subsubsection{Removing 0-and-NA-filled features}
+We notice that some columns are filled with NA values (in the actual data set, elements with value -999.) and 0. These columns are not informative and will also introduce zero standard error when normalizing. Thus, for features that only contain 0 and/or NA values, we discard them.
+
+\subsubsection{Removing correlating features}
+After checking the correlation matrix of the different features, we discovered that some features have high correlation with each other (higher than 0.9). 
+In order to avoid singular matrices during computation, we remove the features $feature\_i, feature\_j$ in which $corr(feature\_i, feature\_j) > 0.9$.
+
+\subsubsection{Feature augmentation}
+For more flexibility, we augment our features using polynomial expansion and also introduce cross terms, i.e. for features $x_1; x_2; ...; x_m$, we augment them into: 
+
+\begin{center}
+\begin{gather*}
+{x_1, x_1^2, ... , x_1^{deg};} \\
+{x_2}, x_2^2, ..., x_2^{deg}; \\
+...; \\
+x_m, x_m^2, ..., x_m^{deg}; \\
+x_1x_2; x_1x_3; ...; x_1x_m; \\
+x_2x_3; x_2x_4; ...; x_2x_m; \\
+...; \\
+x_{m-1}x_m \\
+\end{gather*}
+\end{center}
+Where $deg$ is the hyperparameter describing the scale of polynomial expansion.
+
+\subsubsection{Normalization}
+For each feature $f_i$, we normalize the feature with:
+\begin{center}
+\begin{gather*}
+f_i = \frac{f_i - \mu_i}{\sigma_i}
+\end {gather*}
+\end{center}
+Where $\mu_i$ and $\sigma_i$ are the mean and standard error without NA values.
+
+\subsection{Handling missing values}
+For several NA data that are present in features, we simply replace them as 0.
+
+\section{Models and Training}
+
+
+
+\section{Summary}
+
+The aim of a scientific paper is to convey the idea or discovery of
+the researcher to the minds of the readers. The associated software
+package provides the relevant details, which are often only briefly
+explained in the paper, such that the research can be reproduced.
+To write good papers, identify your key idea, make your contributions
+explicit, and use examples and illustrations to describe the problems
+and solutions.
+
+\section*{Acknowledgements}
+The author thanks Christian Sigg for his careful reading and helpful
+suggestions.
+
+\bibliographystyle{IEEEtran}
+\bibliography{literature}
+
+\end{document}
