@@ -22,11 +22,12 @@ By introducing machine learning methods, we try to predict whether a collision w
 │  shell_top.py
 │
 ├─data
-│      submission.csv
-│      test.csv
-│      train.csv
+│      .gitkeep
 │
-└─results
+|
+├─results
+|      .gitkeep
+
 ```
 - acc.png: the graph which shows accuracy with iterations on the validation dataset.
 - implementations.py: the file contains all implementations of ML techniques required for the project
