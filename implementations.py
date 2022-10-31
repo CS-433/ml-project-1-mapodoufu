@@ -39,7 +39,7 @@ def compute_gradient_regress(y, x, w):
     pred = sigmoid(x.dot(w))
     grd = x.T @ (pred - y)
     
-    return grd
+    return grd / x.shape[0]
 
 def sigmoid(x):
     
@@ -48,12 +48,12 @@ def sigmoid(x):
 def compute_loss_regress(y, x, w):
     pred = sigmoid(x.dot(w))
     loss = y.T.dot(np.log(pred)) + (1 - y).T.dot(np.log(1 - pred))
-    return np.squeeze(-loss)
+    return np.squeeze(-loss)/x.shape[0]
 
 def penalized_logistic_regression(y_tr, tx, w, lambda_):
     num_samples = y_tr.shape[0]
-    loss = compute_loss_regress(y_tr, tx, w) + lambda_ * np.squeeze(w.T.dot(w))
-    gradient = compute_gradient_regress(y_tr, tx, w) + 2 * lambda_ * w
+    loss = compute_loss_regress(y_tr, tx, w) + (lambda_ * np.squeeze(w.T.dot(w)) / 2)
+    gradient = compute_gradient_regress(y_tr, tx, w) + lambda_ * w
     return loss, gradient
 
 def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
@@ -94,6 +94,7 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     ws = [initial_w]
     losses = []
     w = initial_w
+    loss=compute_mse_loss(y, tx, w)
     for n_iter in range(max_iters):
         # compute loss, gradient
         grad, err = compute_gradient(y, tx, w)
@@ -103,6 +104,7 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
         # store w and loss
         ws.append(w)
         losses.append(loss)
+    loss = compute_mse_loss(y, tx, w)
     return  w,loss
 
 def mean_squared_error_sgd(y, tx,initial_w, max_iters, gamma):
@@ -124,7 +126,7 @@ def mean_squared_error_sgd(y, tx,initial_w, max_iters, gamma):
     ws = [initial_w]
     losses = []
     w = initial_w
-    loss=None
+    loss=compute_mse_loss(y, tx, w)
     for n_iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=1, num_batches=1):
             # compute a stochastic gradient and loss
@@ -136,6 +138,7 @@ def mean_squared_error_sgd(y, tx,initial_w, max_iters, gamma):
             # store w and loss
             ws.append(w)
             losses.append(loss)
+    loss = compute_mse_loss(y, tx, w)
     return w,loss
 
 def least_squares(y, tx):
@@ -196,6 +199,7 @@ def logistic_regression(y, tx,initial_w, max_iters, gamma):
     ws = [initial_w]
     losses = []
     w = initial_w
+    loss=compute_loss_regress(y, tx, w)
     for n_iter in range(max_iters):
         grad = compute_gradient_regress(y, tx, w)
         loss = compute_loss_regress(y, tx, w)
@@ -205,6 +209,7 @@ def logistic_regression(y, tx,initial_w, max_iters, gamma):
         losses.append(loss)
         if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < 1e-8:
             break
+    loss = compute_loss_regress(y, tx, w)
     return w,loss
 
 def reg_logistic_regression(y, tx,lambda_,initial_w, max_iters, gamma):
@@ -226,6 +231,7 @@ def reg_logistic_regression(y, tx,lambda_,initial_w, max_iters, gamma):
     ws = [initial_w]
     losses = []
     w = initial_w
+    loss=compute_loss_regress(y, tx, w) + (lambda_ * np.squeeze(w.T.dot(w))/2)
     for n_iter in range(max_iters):
         loss,w = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
         # update w by gradient descent
@@ -233,6 +239,7 @@ def reg_logistic_regression(y, tx,lambda_,initial_w, max_iters, gamma):
         losses.append(loss)
         if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < 1e-8:
             break
+    loss = compute_loss_regress(y, tx, w) + (lambda_ * np.squeeze(w.T.dot(w))/2)
     return w,loss
 
 
