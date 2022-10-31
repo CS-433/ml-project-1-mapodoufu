@@ -88,7 +88,7 @@ def compute_mse_loss(y, tx, w):
     e = y - tx.dot(w)
     mse_loss=1/2*np.mean(e**2)
     return mse_loss
-def least_squares_GD(y, tx, initial_w, max_iters, gamma):
+def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     """Gradient descent algorithm."""
     # Define parameters to store w and loss
     ws = [initial_w]
@@ -105,7 +105,7 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
         losses.append(loss)
     return  w,loss
 
-def least_squares_SGD(y, tx,initial_w, max_iters, gamma):
+def mean_squared_error_sgd(y, tx,initial_w, max_iters, gamma):
     """The Stochastic Gradient Descent algorithm (SGD).
             
     Args:
